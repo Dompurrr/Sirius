@@ -76,10 +76,10 @@ def detector():
         key = cv2.waitKey(1)
         if key == 27:
             break
-
     cap.release()
     cv2.destroyAllWindows()
-    SendThis = FinalBox([0])
-    for sochi in range(0,9):
-        len(FinalBox)
+    stas=[]
+    for jora in range(0, 2)
+        
+
 detector()
