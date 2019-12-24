@@ -58,7 +58,8 @@ def detector():
                     print(boxes)
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
-
+        if ticker == 10:
+            ThisBox=boxes
         for i, box in enumerate(boxes):
             x, y, w, h = box
             label = str(classes[class_ids[i]])
@@ -78,8 +79,7 @@ def detector():
             break
     cap.release()
     cv2.destroyAllWindows()
-    stas=[]
-    for jora in range(0, 2)
-        
+    return(ThisBox)
 
-detector()
+
+print(detector())
