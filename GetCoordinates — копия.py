@@ -1,10 +1,9 @@
-def detector():
+def detector(v):
     import cv2
     import numpy as np
     import time
 
-    focus = 816.2
-    tomato_size=60
+    tomato_size=63
 
     net = cv2.dnn.readNet("weights/yolov3-tiny_obj_last.weights", "cfg/yolov3-tiny_obj.cfg")
     classes = []
@@ -14,7 +13,7 @@ def detector():
     output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
     colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     g=0
 
     font = cv2.FONT_HERSHEY_PLAIN
@@ -22,11 +21,9 @@ def detector():
     frame_id = 0
     boxes = []
     class_ids = []
-    mid_w = []
     while True:
         _, frame = cap.read()
         frame_id += 1
-        numOfTomatoes=0
 
         height, width, channels = frame.shape
 
@@ -50,33 +47,28 @@ def detector():
 
                 if confidence > 0.1 and frame_id%10 == 0:
                     # Object detected
-                    numOfTomatoes=numOfTomatoes+1
                     center_x = int(detection[0] * width)
                     center_y = int(detection[1] * height)
                     w = int(detection[2] * width)
                     h = int(detection[3] * height)
-                    if frame_id == 10:
-                        mid_w.append(w)
-                    else:
-                        mid_w[numOfTomatoes-1] = (mid_w[numOfTomatoes-1] + w) // 2
 
                     # Rectangle coordinates
                     x = int(center_x - w / 2)
                     y = int(center_y - h / 2)
-                    distance = int(tomato_size*focus/mid_w[numOfTomatoes-1])
 
-                    boxes.append([x, y, w, h, distance])
+                    boxes.append([x, y, w, h])
                     print(boxes)
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
         #if ticker == 10:
         #    ThisBox=boxes
         for i, box in enumerate(boxes):
-            x, y, w, h, distance = box
+            x, y, w, h = box
             label = str(classes[class_ids[i]])
             color = colors[class_ids[i]]
+            confidence = confidences[i]
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(frame, label + " " + str(distance), (x, y + 30), font, 2, color, 3)
+            cv2.putText(frame, label + " " + str(round(confidence, 2)), (x, y + 30), font, 3, color, 3)
 
         elapsed_time = time.time() - starting_time
         fps = frame_id / elapsed_time
@@ -88,4 +80,4 @@ def detector():
     cap.release()
     cv2.destroyAllWindows()
 
-detector()
+detector(800)

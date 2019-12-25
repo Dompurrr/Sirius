@@ -22,7 +22,7 @@ def init_com():
 	s.flushInput()  # Flush startup text in serial input
 	print ('Sending gcode')
 
-def massive_send(mass_gcode):
+def massive_send(mass_gcode = ['G90;','G28;', 'G1 F3500 X345;', 'G1 Y50;','G1 Z20;', 'G1 X200;', 'G1 Y367;', 'G1 Z705;', 'G1 X42;']):
 	global X
 	global Y
 	global Z
@@ -37,6 +37,7 @@ def massive_send(mass_gcode):
 		print(X)
 		print(Y)
 		print(Z)
+
 
 		l = removeComment(element)
 		l = l.strip() # Strip all EOL characters for streaming

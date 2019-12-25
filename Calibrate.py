@@ -68,4 +68,4 @@ def Calibrate():
     cap.release()
     cv2.destroyAllWindows()
 
-    return focus
+    print(focus)
