@@ -1,2 +1,0 @@
-def FindBestWay():
-    print("BestWayHere")
