@@ -23,6 +23,7 @@ def detector():
     boxes = []
     class_ids = []
     mid_w = []
+    GoNext = []
     while True:
         _, frame = cap.read()
         frame_id += 1
@@ -66,18 +67,19 @@ def detector():
                     distance = int(tomato_size*focus/mid_w[numOfTomatoes-1])
 
                     boxes.append([x, y, w, h, distance])
-                    print(boxes)
+                    #print(boxes)
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
-        #if ticker == 10:
-        #    ThisBox=boxes
+
         for i, box in enumerate(boxes):
             x, y, w, h, distance = box
             label = str(classes[class_ids[i]])
             color = colors[class_ids[i]]
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             cv2.putText(frame, label + " " + str(distance), (x, y + 30), font, 2, color, 3)
-
+            if frame_id == 50:
+                GoNext.append([x,y,distance])
+                print(GoNext)
         elapsed_time = time.time() - starting_time
         fps = frame_id / elapsed_time
         cv2.putText(frame, "FPS: " + str(round(fps, 2)), (10, 50), font, 4, (0, 0, 0), 3)
@@ -85,7 +87,8 @@ def detector():
         key = cv2.waitKey(1)
         if key == 27:
             break
+        if frame_id==300:
+            return
     cap.release()
     cv2.destroyAllWindows()
-
 detector()

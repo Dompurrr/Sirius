@@ -10,7 +10,7 @@ def removeComment(string):
 		return string[:string.index(';')]
 
 def init_com():
-	# Wake up 
+	# Wake up
 	s.write("\r\n\r\n".encode()) # Hit enter a few times to wake the Printrbot
 	time.sleep(2)   # Wait for Printrbot to initialize
 	s.flushInput()  # Flush startup text in serial input
@@ -49,7 +49,7 @@ def check():
 			s.write((l + '\n').encode()) # Send g-code block
 			grbl_out = s.readline() # Wait for response with carriage return
 			print(grbl_out)
-			
+
 def get_current_coordinates():
     global X
 	global Y

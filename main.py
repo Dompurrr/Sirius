@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import time
 
-#отправить манипулятор перед камерой
 import Calibrate #находим фокусное расстояние
 import GetCoordinates #берем фокусное, находим координаты помидора в xyz, возвращаем их двумерным массивом
 import FindBestWay #берем этот массив и находим точки передвижения массивом
@@ -17,5 +16,4 @@ layer_names = net.getLayerNames()
 output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-focus = Calibrate.Calibrate()
-GetCoordinates.detector(focus)
+GetCoordinates.detector()
