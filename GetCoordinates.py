@@ -1,18 +1,21 @@
-import cv2
-import numpy as np
-import time
+def detector(v):
+    import cv2
+    import numpy as np
+    import time
 
-net = cv2.dnn.readNet("weights/yolov3-tiny_obj_last.weights", "cfg/yolov3-tiny_obj.cfg")
-classes = []
-with open("obj.names", "r") as f:
-    classes = [line.strip() for line in f.readlines()]
-layer_names = net.getLayerNames()
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-colors = np.random.uniform(0, 255, size=(len(classes), 3))
+    tomato_size=63
 
-def detector():
+    net = cv2.dnn.readNet("weights/yolov3-tiny_obj_last.weights", "cfg/yolov3-tiny_obj.cfg")
+    classes = []
+    with open("obj.names", "r") as f:
+        classes = [line.strip() for line in f.readlines()]
+    layer_names = net.getLayerNames()
+    output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    colors = np.random.uniform(0, 255, size=(len(classes), 3))
+
     FinalBox = []
     cap = cv2.VideoCapture(0)
+    g=0
 
     font = cv2.FONT_HERSHEY_PLAIN
     starting_time = time.time()
@@ -55,6 +58,7 @@ def detector():
                     y = int(center_y - h / 2)
 
                     boxes.append([x, y, w, h])
+                    g=g+1
                     print(boxes)
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
@@ -79,7 +83,10 @@ def detector():
             break
     cap.release()
     cv2.destroyAllWindows()
-    return(ThisBox)
-
-
-print(detector())
+    print(ThisBox)
+    for sch in range(0, g-1):
+        print(sch)
+        x=ThisBox[0][sch]+ThisBox[2][sch]//2
+        y=ThisBox[sch][1]
+        z=int((tomato_size*v)/ThisBox[sch][2])
+        print(x,y,z)

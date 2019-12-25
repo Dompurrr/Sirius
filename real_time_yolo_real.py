@@ -12,7 +12,7 @@ output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # Loading image
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 font = cv2.FONT_HERSHEY_PLAIN
 starting_time = time.time()
@@ -37,7 +37,8 @@ while True:
         for detection in out:
             scores = detection[5:]
             class_id = np.argmax(scores)
-            confidence = scores[class_id]
+            if class_id != 3:
+                    confidence = scores[class_id]
 
             if confidence > 0.1:
                 # Object detected
