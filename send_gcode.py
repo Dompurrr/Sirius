@@ -1,7 +1,11 @@
-import serial
 import time
 import argparse
+import serial
+import cv2
+import numpy as np
 
+import ToXYZ
+import Calibrate_new
 
 parser = argparse.ArgumentParser(description='Best team POMIDORY')
 parser.add_argument('-p','--port',help='Input USB port',required=True)
@@ -14,6 +18,14 @@ def removeComment(string):
 		return string
 	else:
 		return string[:string.index(';')]
+
+net = cv2.dnn.readNet("weights/yolov3-tiny_obj_last.weights", "cfg/yolov3-tiny_obj.cfg")
+classes = []
+with open("obj.names", "r") as f:
+    classes = [line.strip() for line in f.readlines()]
+layer_names = net.getLayerNames()
+output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 def init_com():
 	# Wake up
@@ -46,7 +58,7 @@ def massive_send(mass_gcode):
 			grbl_out = s.readline() # Wait for response with carriage return
 			print(grbl_out)
 
-def generate_gcode(position = [0,0,0], tomato_massive = [[100, 200, 300],[200, 210, 350]], init = True):
+def generate_gcode(position = [0,0,0], tomato_massive = [[385, 585, 113]], init = True):
 	if init:
 		gcode = ['G90;','G28;', 'G1 F3500 X0;']
 	else:
@@ -57,9 +69,12 @@ def generate_gcode(position = [0,0,0], tomato_massive = [[100, 200, 300],[200, 2
 		str_X= 'G1 X' + str(tomato[0])+';'
 		str_Y = 'G1 Y' + str(tomato[1])+';'
 		str_Z = 'G1 Z' + str(tomato[2])+';'
+		str_end = 'G1 Y350;'
 		gcode.append(str_Z);
 		gcode.append(str_X);
 		gcode.append(str_Y);
+		gcode.append(str_end);
+		gcode.append('')
 	print (gcode)
 	return gcode
 
@@ -73,10 +88,17 @@ def check():
 			s.write((l + '\n').encode()) # Send g-code block
 			grbl_out = s.readline() # Wait for response with carriage return
 			print(grbl_out)
+
+focus, boxes = Calibrate_new.Calibrate()
+arr=[]
+for i in range(0, len(boxes)):
+    gosha = ToXYZ.ToXYZ(boxes[i][0],boxes[i][1],boxes[i][2], 816.2)
+    arr.append(gosha)
+print(arr)
 s = serial.Serial(args.port,115200)
 init_com()
-gcode = generate_gcode()
+gcode = generate_gcode([0,0,0],arr, True)
+print(gcode)
 massive_send(gcode)
-check();
-#massive_send(mass_gcode = ['G1 F3500 X545;','G1 Y1100;','G1 Z70;'])
+check()
 s.close()
